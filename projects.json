@@ -1,0 +1,180 @@
+{
+  "schema": "polina-project-catalog/v1",
+  "projects": [
+    {
+      "id": "web-profile",
+      "title": "React — Profile Card",
+      "repo": "https://github.com/MaximillianVoss/polina-profile-card.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "web-counter",
+      "title": "React — Counter",
+      "repo": "https://github.com/MaximillianVoss/polina-counter.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "web-feedback",
+      "title": "React — User Feedback",
+      "repo": "https://github.com/MaximillianVoss/polina-user-feedback.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "web-quiz",
+      "title": "React — Simple Quiz",
+      "repo": "https://github.com/MaximillianVoss/polina-simple-quiz.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "web-budget",
+      "title": "React — Budget Tracker",
+      "repo": "https://github.com/MaximillianVoss/polina-budget-tracker.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "web-trivia",
+      "title": "React — Trivia API",
+      "repo": "https://github.com/MaximillianVoss/polina-trivia-api.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "web-github",
+      "title": "React — GitHub Explorer",
+      "repo": "https://github.com/MaximillianVoss/polina-github-explorer.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "web-trainer",
+      "title": "React — Personal Trainer, итоговый проект",
+      "repo": "https://github.com/MaximillianVoss/polina-personal-trainer.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "mob-calculator",
+      "title": "React Native — Calculator, история и страницы",
+      "repo": "https://github.com/MaximillianVoss/polina-calculator.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "mob-shopping",
+      "title": "React Native — Shopping List, SQLite и Paper",
+      "repo": "https://github.com/MaximillianVoss/polina-shopping-list.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "mob-firebase",
+      "title": "React Native — Shopping List Firebase",
+      "repo": "https://github.com/MaximillianVoss/polina-shopping-list-firebase.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "mob-guess",
+      "title": "React Native — Number Guessing Game",
+      "repo": "https://github.com/MaximillianVoss/polina-number-guessing-game.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "mob-recipe",
+      "title": "React Native — Recipe Finder",
+      "repo": "https://github.com/MaximillianVoss/polina-recipe-finder.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "mob-euro",
+      "title": "React Native — Euro Converter",
+      "repo": "https://github.com/MaximillianVoss/polina-euro-converter.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "mob-address",
+      "title": "React Native — Find Address",
+      "repo": "https://github.com/MaximillianVoss/polina-find-address.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "mob-weather",
+      "title": "React Native — Weather Forecast",
+      "repo": "https://github.com/MaximillianVoss/polina-weather-forecast.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "mob-contacts",
+      "title": "React Native — Contacts",
+      "repo": "https://github.com/MaximillianVoss/polina-contacts.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "mob-speech",
+      "title": "React Native — Text to Speech",
+      "repo": "https://github.com/MaximillianVoss/polina-text-to-speech.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "mob-places",
+      "title": "React Native — My Places",
+      "repo": "https://github.com/MaximillianVoss/polina-my-places.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "mob-soundshades",
+      "title": "React Native — SoundShades, итоговый проект",
+      "repo": "https://github.com/MaximillianVoss/polina-soundshades.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "spring-endpoints",
+      "title": "Spring Boot — Controller Endpoints",
+      "repo": "https://github.com/MaximillianVoss/polina-controller-endpoints.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "spring-params",
+      "title": "Spring Boot — Request Parameters",
+      "repo": "https://github.com/MaximillianVoss/polina-request-parameters.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "spring-bookstore",
+      "title": "Spring Boot — Bookstore, главы 3–6 и Testing",
+      "repo": "https://github.com/MaximillianVoss/polina-bookstore.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "spring-whichone",
+      "title": "Spring Boot — WhichOne, итоговый проект",
+      "repo": "https://github.com/MaximillianVoss/polina-whichone.git",
+      "ref": "main",
+      "path": "."
+    },
+    {
+      "id": "web-car-shop",
+      "title": "React — Car Shop, управление автомобилями",
+      "repo": "https://github.com/MaximillianVoss/polina-car-shop.git",
+      "ref": "main",
+      "path": "."
+    }
+  ]
+}
