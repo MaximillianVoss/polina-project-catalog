@@ -349,22 +349,21 @@ def validate(data):
         key = (item["repo"].removesuffix(".git").lower(), ref, path)
         if item["id"] in ids or key in sources:
             raise ValueError("В каталоге повторяется ID или источник проекта.")
-        if "type" in row:
-            if row["type"] not in ("vite", "expo", "spring"):
-                raise ValueError("Неизвестный тип проекта в каталоге.")
-            item["type"] = row["type"]
-        if "createdAt" in row:
-            created = row["createdAt"]
-            if not isinstance(created, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2}))?", created):
-                raise ValueError("Некорректная дата создания репозитория.")
-            try:
-                if len(created) == 10:
-                    date.fromisoformat(created)
-                else:
-                    datetime.fromisoformat(created.replace("Z", "+00:00"))
-            except ValueError:
-                raise ValueError("Некорректная дата создания репозитория.") from None
-            item["createdAt"] = created
+        project_type = row.get("type")
+        if project_type not in ("vite", "expo", "spring"):
+            raise ValueError("Для каждого проекта нужно указать тип: vite, expo или spring.")
+        item["type"] = project_type
+        created = row.get("createdAt")
+        if not isinstance(created, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2}))?", created):
+            raise ValueError("Для каждого проекта нужна корректная дата создания репозитория.")
+        try:
+            if len(created) == 10:
+                date.fromisoformat(created)
+            else:
+                datetime.fromisoformat(created.replace("Z", "+00:00"))
+        except ValueError:
+            raise ValueError("Некорректная дата создания репозитория.") from None
+        item["createdAt"] = created
         ids.add(item["id"])
         sources.add(key)
         result.append(item)
