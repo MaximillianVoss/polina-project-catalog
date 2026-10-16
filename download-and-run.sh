@@ -13,7 +13,7 @@ if [[ ${#python_cmd[@]} -eq 0 ]] && command -v py >/dev/null 2>&1 && py -3 -c 'i
 [[ ${#python_cmd[@]} -gt 0 ]] || die 'Установите Python 3.9+ (python, python3 или py -3).'
 command -v git >/dev/null 2>&1 || die 'Установите Git. На Windows запускайте этот файл через Git Bash.'
 
-requested=""; destination=""; build_args=(); platform=""; build_only=0; list_only=0; offline=0
+requested=""; destination=""; build_args=(); platform=""; build_only=0; list_only=0; offline=0; replace_existing=0
 catalog_url='https://raw.githubusercontent.com/MaximillianVoss/polina-project-catalog/main/projects.json'
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -31,8 +31,9 @@ while [[ $# -gt 0 ]]; do
     --smoke-test|--no-open|--skip-tests|--strict-checks) build_args+=("$1"); shift ;;
     --list) list_only=1; shift ;;
     --offline) offline=1; shift ;;
+    --replace) replace_existing=1; shift ;;
     --help|-h)
-      printf '%s\n' 'Запуск: bash download-and-run.sh' 'Выберите номер проекта, затем введите конечную папку.' 'Список автоматически обновляется из каталога GitHub при каждом запуске.' 'Если каталог недоступен, используется последний сохранённый или встроенный список.' 'Скачивание → новая история Git без remote → сборка и тесты → запуск.' 'Непустая папка сохраняется; выберите новую или пустую.' 'Для автоматизации: --project ID --dest ПАПКА [--smoke-test] [--no-open] [--build-only] [--expo-platform android|ios|web].' 'Каталог: --offline (без обновления списка), --catalog-url HTTPS_RAW_GITHUB_URL.'
+      printf '%s\n' 'Запуск: bash download-and-run.sh' 'Выберите номер проекта, затем введите конечную папку.' 'Список автоматически обновляется из каталога GitHub при каждом запуске.' 'Если каталог недоступен, используется последний сохранённый или встроенный список.' 'Скачивание → новая история Git без remote → сборка и тесты → запуск.' 'Занятую папку можно заменить после подтверждения.' 'Для автоматизации: --project ID --dest ПАПКА [--replace] [--smoke-test] [--no-open] [--build-only] [--expo-platform android|ios|web].' 'Каталог: --offline (без обновления списка), --catalog-url HTTPS_RAW_GITHUB_URL.'
       exit 0 ;;
     *) die "Неизвестный параметр: $1" ;;
   esac
@@ -58,175 +59,225 @@ cat > "$tool_dir/catalog-default.json" <<'__CATALOG_DEFAULT_JSON__'
       "title": "React — Profile Card",
       "repo": "https://github.com/MaximillianVoss/polina-profile-card.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "vite",
+      "createdAt": "2026-10-14T16:08:47Z"
     },
     {
       "id": "web-counter",
       "title": "React — Counter",
       "repo": "https://github.com/MaximillianVoss/polina-counter.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "vite",
+      "createdAt": "2026-10-14T16:11:08Z"
     },
     {
       "id": "web-feedback",
       "title": "React — User Feedback",
       "repo": "https://github.com/MaximillianVoss/polina-user-feedback.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "vite",
+      "createdAt": "2026-10-14T16:17:07Z"
     },
     {
       "id": "web-quiz",
       "title": "React — Simple Quiz",
       "repo": "https://github.com/MaximillianVoss/polina-simple-quiz.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "vite",
+      "createdAt": "2026-10-14T16:17:12Z"
     },
     {
       "id": "web-budget",
       "title": "React — Budget Tracker",
       "repo": "https://github.com/MaximillianVoss/polina-budget-tracker.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "vite",
+      "createdAt": "2026-10-14T16:18:49Z"
     },
     {
       "id": "web-trivia",
       "title": "React — Trivia API",
       "repo": "https://github.com/MaximillianVoss/polina-trivia-api.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "vite",
+      "createdAt": "2026-10-14T16:18:54Z"
     },
     {
       "id": "web-github",
       "title": "React — GitHub Explorer",
       "repo": "https://github.com/MaximillianVoss/polina-github-explorer.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "vite",
+      "createdAt": "2026-10-14T16:18:57Z"
     },
     {
       "id": "web-trainer",
       "title": "React — Personal Trainer, итоговый проект",
       "repo": "https://github.com/MaximillianVoss/polina-personal-trainer.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "vite",
+      "createdAt": "2026-10-14T16:20:48Z"
     },
     {
       "id": "mob-calculator",
       "title": "React Native — Calculator, история и страницы",
       "repo": "https://github.com/MaximillianVoss/polina-calculator.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "expo",
+      "createdAt": "2026-10-14T16:20:47Z"
     },
     {
       "id": "mob-shopping",
       "title": "React Native — Shopping List, SQLite и Paper",
       "repo": "https://github.com/MaximillianVoss/polina-shopping-list.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "expo",
+      "createdAt": "2026-10-14T16:20:48Z"
     },
     {
       "id": "mob-firebase",
       "title": "React Native — Shopping List Firebase",
       "repo": "https://github.com/MaximillianVoss/polina-shopping-list-firebase.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "expo",
+      "createdAt": "2026-10-14T16:21:03Z"
     },
     {
       "id": "mob-guess",
       "title": "React Native — Number Guessing Game",
       "repo": "https://github.com/MaximillianVoss/polina-number-guessing-game.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "expo",
+      "createdAt": "2026-10-14T16:21:05Z"
     },
     {
       "id": "mob-recipe",
       "title": "React Native — Recipe Finder",
       "repo": "https://github.com/MaximillianVoss/polina-recipe-finder.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "expo",
+      "createdAt": "2026-10-14T16:21:04Z"
     },
     {
       "id": "mob-euro",
       "title": "React Native — Euro Converter",
       "repo": "https://github.com/MaximillianVoss/polina-euro-converter.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "expo",
+      "createdAt": "2026-10-14T16:21:20Z"
     },
     {
       "id": "mob-address",
       "title": "React Native — Find Address",
       "repo": "https://github.com/MaximillianVoss/polina-find-address.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "expo",
+      "createdAt": "2026-10-14T16:21:21Z"
     },
     {
       "id": "mob-weather",
       "title": "React Native — Weather Forecast",
       "repo": "https://github.com/MaximillianVoss/polina-weather-forecast.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "expo",
+      "createdAt": "2026-10-14T16:21:21Z"
     },
     {
       "id": "mob-contacts",
       "title": "React Native — Contacts",
       "repo": "https://github.com/MaximillianVoss/polina-contacts.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "expo",
+      "createdAt": "2026-10-14T16:21:37Z"
     },
     {
       "id": "mob-speech",
       "title": "React Native — Text to Speech",
       "repo": "https://github.com/MaximillianVoss/polina-text-to-speech.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "expo",
+      "createdAt": "2026-10-14T16:21:38Z"
     },
     {
       "id": "mob-places",
       "title": "React Native — My Places",
       "repo": "https://github.com/MaximillianVoss/polina-my-places.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "expo",
+      "createdAt": "2026-10-14T16:21:38Z"
     },
     {
       "id": "mob-soundshades",
       "title": "React Native — SoundShades, итоговый проект",
       "repo": "https://github.com/MaximillianVoss/polina-soundshades.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "expo",
+      "createdAt": "2026-10-14T16:21:55Z"
     },
     {
       "id": "spring-endpoints",
       "title": "Spring Boot — Controller Endpoints",
       "repo": "https://github.com/MaximillianVoss/polina-controller-endpoints.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "spring",
+      "createdAt": "2026-10-14T16:21:54Z"
     },
     {
       "id": "spring-params",
       "title": "Spring Boot — Request Parameters",
       "repo": "https://github.com/MaximillianVoss/polina-request-parameters.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "spring",
+      "createdAt": "2026-10-14T16:21:55Z"
     },
     {
       "id": "spring-bookstore",
       "title": "Spring Boot — Bookstore, главы 3–6 и Testing",
       "repo": "https://github.com/MaximillianVoss/polina-bookstore.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "spring",
+      "createdAt": "2026-10-14T16:22:11Z"
     },
     {
       "id": "spring-whichone",
       "title": "Spring Boot — WhichOne, итоговый проект",
       "repo": "https://github.com/MaximillianVoss/polina-whichone.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "spring",
+      "createdAt": "2026-10-14T16:22:11Z"
     },
     {
       "id": "web-car-shop",
       "title": "React — Car Shop, управление автомобилями",
       "repo": "https://github.com/MaximillianVoss/polina-car-shop.git",
       "ref": "main",
-      "path": "."
+      "path": ".",
+      "type": "vite",
+      "createdAt": "2026-10-14T18:28:14Z"
     }
   ]
 }
@@ -235,6 +286,7 @@ __CATALOG_DEFAULT_JSON__
 cat > "$tool_dir/project_catalog.py" <<'__CATALOG_LOADER_PY__'
 """Load a GitHub JSON catalog as data; never evaluate its contents. Python 3.9+."""
 import argparse
+from datetime import date, datetime
 import hashlib
 from http.client import HTTPException
 import json
@@ -297,6 +349,22 @@ def validate(data):
         key = (item["repo"].removesuffix(".git").lower(), ref, path)
         if item["id"] in ids or key in sources:
             raise ValueError("В каталоге повторяется ID или источник проекта.")
+        if "type" in row:
+            if row["type"] not in ("vite", "expo", "spring"):
+                raise ValueError("Неизвестный тип проекта в каталоге.")
+            item["type"] = row["type"]
+        if "createdAt" in row:
+            created = row["createdAt"]
+            if not isinstance(created, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2}))?", created):
+                raise ValueError("Некорректная дата создания репозитория.")
+            try:
+                if len(created) == 10:
+                    date.fromisoformat(created)
+                else:
+                    datetime.fromisoformat(created.replace("Z", "+00:00"))
+            except ValueError:
+                raise ValueError("Некорректная дата создания репозитория.") from None
+            item["createdAt"] = created
         ids.add(item["id"])
         sources.add(key)
         result.append(item)
@@ -372,6 +440,7 @@ def main():
     parser.add_argument("--url", default=DEFAULT_URL)
     parser.add_argument("--embedded", required=True)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--menu-json", help="Validated catalog with optional display metadata")
     parser.add_argument("--offline", action="store_true")
     args = parser.parse_args()
     sys.stdout.reconfigure(encoding="utf-8", newline="\n")
@@ -381,6 +450,9 @@ def main():
         lines = ["\t".join(row[key] for key in ("id", "title", "repo", "ref", "path")) for row in data["projects"]]
         with Path(args.output).open("w", encoding="utf-8", newline="\n") as output:
             output.write("\n".join(lines) + "\n")
+        if args.menu_json:
+            with Path(args.menu_json).open("w", encoding="utf-8", newline="\n") as output:
+                json.dump(data, output, ensure_ascii=False)
     except (OSError, ValueError, UnicodeError) as error:
         print("Ошибка каталога: " + str(error), file=sys.stderr)
         return 1
@@ -391,7 +463,203 @@ if __name__ == "__main__":
     sys.exit(main())
 __CATALOG_LOADER_PY__
 
-catalog_args=(--url "$catalog_url" --embedded "$tool_dir/catalog-default.json" --output "$tool_dir/catalog.tsv")
+cat > "$tool_dir/terminal_table.py" <<'__CATALOG_TABLE_PY__'
+"""Shared, read-only terminal menu renderer. Python 3.9+, standard library only."""
+import argparse
+from datetime import date, datetime
+import json
+import os
+from pathlib import Path
+import re
+import shutil
+import subprocess
+import sys
+import unicodedata
+import xml.etree.ElementTree as ET
+
+TYPES = {"vite": "Vite", "expo": "Expo", "spring": "Spring Boot"}
+
+
+def clean(value):
+    return "".join(" " if unicodedata.category(c).startswith("C") and c != "\u200d" else c
+                   for c in str(value)).strip()
+
+
+def cell_width(value):
+    width = 0
+    joined = False
+    regional = False
+    for char in value:
+        if char == "\u200d":
+            joined = True
+            continue
+        if unicodedata.combining(char) or char in ("\ufe0e", "\ufe0f") or 0x1F3FB <= ord(char) <= 0x1F3FF:
+            continue
+        is_regional = 0x1F1E6 <= ord(char) <= 0x1F1FF
+        size = 2 if unicodedata.east_asian_width(char) in ("W", "F") or 0x1F000 <= ord(char) <= 0x1FAFF else 1
+        if not joined and not (is_regional and regional):
+            width += size
+        joined = False
+        regional = is_regional and not regional
+    return width
+
+
+def fit(value, width):
+    value = clean(value)
+    if cell_width(value) > width:
+        prefix = ""
+        for char in value:
+            if cell_width(prefix + char) > width - 1:
+                break
+            prefix += char
+        value = prefix.rstrip("\u200d") + "…"
+    return value + " " * max(0, width - cell_width(value))
+
+
+def terminal_width():
+    raw = os.environ.get("COLUMNS", "")
+    return max(32, min(240, int(raw))) if raw.isdigit() else max(32, min(240, shutil.get_terminal_size((120, 24)).columns))
+
+
+def table(rows, width=None):
+    width = width or terminal_width()
+    headers = ["№", "Имя", "Папка", "Тип", "Создана"]
+    # Five visible fields even in a small terminal; prefer space for names and folders.
+    widths = [max(2, len(str(len(rows)))), 4, 5, 3, 10]
+    available = max(0, width - 16 - sum(widths))
+    for column, target in ((3, 11), (1, 22), (2, 36), (1, 42), (2, 120)):
+        extra = min(available, max(0, target - widths[column]))
+        widths[column] += extra
+        available -= extra
+    if width < sum(widths) + 16:
+        widths[4] = max(4, width - 16 - sum(widths[:4]))
+        for column in (2, 1):
+            excess = max(0, sum(widths) + 16 - width)
+            widths[column] -= min(excess, widths[column] - 3)
+    def border(left, middle, right):
+        return left + middle.join("─" * (n + 2) for n in widths) + right
+    def row_line(values):
+        return "│ " + " │ ".join(fit(value, n) for value, n in zip(values, widths)) + " │"
+    lines = [border("┌", "┬", "┐"), row_line(headers), border("├", "┼", "┤")]
+    lines.extend(row_line(row) for row in rows)
+    lines.append(border("└", "┴", "┘"))
+    return "\n".join(lines)
+
+
+def local_path(raw):
+    if os.name == "nt":
+        match = re.fullmatch(r"/(?:cygdrive/)?([A-Za-z])(?:/(.*))?", raw)
+        if match:
+            return Path(match[1] + ":/" + (match[2] or ""))
+    return Path(raw)
+
+
+def creation_date(path):
+    try:
+        info = path.stat()
+        birth = getattr(info, "st_birthtime", None)
+        if birth is None and os.name == "nt":
+            birth = info.st_ctime
+        if birth is not None:
+            return datetime.fromtimestamp(birth).strftime("%Y-%m-%d")
+    except (OSError, ValueError, OverflowError):
+        return "—"
+    # Linux ctime is metadata-change time, not creation time. Ask stat for birth time.
+    for command in (["stat", "-c", "%w", "--", str(path)],
+                    ["stat", "-f", "%SB", "-t", "%Y-%m-%d", str(path)]):
+        try:
+            result = subprocess.run(command, capture_output=True, text=True, timeout=2, check=False)
+            value = result.stdout.strip()[:10]
+            if result.returncode == 0 and re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+                return date.fromisoformat(value).isoformat()
+        except (OSError, ValueError, subprocess.SubprocessError):
+            pass
+    return "—"
+
+
+def friendly_name(path, marker, label):
+    try:
+        if marker == "package.json":
+            app = path / "app.json"
+            if app.is_file():
+                data = json.loads(app.read_text(encoding="utf-8-sig"))
+                name = data.get("expo", {}).get("name")
+                if isinstance(name, str) and name.strip():
+                    return clean(name)
+            data = json.loads((path / marker).read_text(encoding="utf-8-sig"))
+            name = data.get("displayName") or data.get("name")
+        else:
+            root = ET.parse(path / marker).getroot()
+            name = None
+            for key in ("name", "artifactId"):
+                element = next((item for item in root if item.tag.rsplit("}", 1)[-1] == key), None)
+                if element is not None and element.text and element.text.strip():
+                    name = element.text.strip()
+                    break
+        if isinstance(name, str) and name.strip():
+            # Remove course scaffolding identifiers, retain the application name.
+            name = re.sub(r"^(?:front-end-sof\w+?-\d+-|fullstack-homework-|react-native-homework-|homework-\d+-|assignment\d+-)", "", name)
+            name = re.sub(r"-pe\d+$", "", name)
+            name = clean(re.sub(r"[-_]+", " ", name))
+            return name[:1].upper() + name[1:]
+    except (OSError, ValueError, TypeError, AttributeError, ET.ParseError):
+        pass
+    return clean(Path(label).name or label)
+
+
+def local_rows(payload):
+    values = payload.decode("utf-8", errors="replace").split("\0")
+    if values and values[-1] == "":
+        values.pop()
+    if len(values) % 5:
+        raise ValueError("Неполная строка списка проектов.")
+    rows = []
+    for offset in range(0, len(values), 5):
+        number, kind, label, directory, marker = values[offset:offset + 5]
+        path = local_path(directory)
+        rows.append([number, friendly_name(path, marker, label), label, TYPES.get(kind, kind), creation_date(path)])
+    return rows
+
+
+def catalog_rows(data):
+    rows = []
+    for number, item in enumerate(data["projects"], 1):
+        folder = item["repo"].removesuffix(".git").rsplit("/", 1)[-1]
+        kind = item.get("type", "")
+        created = item.get("createdAt", "")[:10]
+        try:
+            created = date.fromisoformat(created).isoformat()
+        except (TypeError, ValueError):
+            created = "—"
+        rows.append([str(number), item["title"], folder, TYPES.get(kind, kind) or "—", created])
+    return rows
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("mode", choices=("local", "catalog"))
+    parser.add_argument("file", nargs="?")
+    args = parser.parse_args()
+    sys.stdout.reconfigure(encoding="utf-8", newline="\n")
+    if args.mode == "local":
+        rows = local_rows(sys.stdin.buffer.read())
+    else:
+        rows = catalog_rows(json.loads(Path(args.file).read_text(encoding="utf-8-sig")))
+    print(table(rows))
+    print(f"Всего проектов: {len(rows)}")
+    if args.mode == "local":
+        print("Создана: локальная папка; — = дата неизвестна.")
+        print("… = сокращено; полный путь будет показан после выбора.")
+    else:
+        print("Создана: репозиторий GitHub; — = дата неизвестна.")
+        print("Папка: предлагаемое имя; место сохранения выбирается далее.")
+
+
+if __name__ == "__main__":
+    main()
+__CATALOG_TABLE_PY__
+
+catalog_args=(--url "$catalog_url" --embedded "$tool_dir/catalog-default.json" --output "$tool_dir/catalog.tsv" --menu-json "$tool_dir/catalog.json")
 if [[ $offline -eq 1 ]]; then catalog_args+=(--offline); fi
 "${python_cmd[@]}" "$tool_dir/project_catalog.py" "${catalog_args[@]}"
 project_ids=(); project_names=(); project_repos=(); project_refs=(); project_paths=()
@@ -402,7 +670,7 @@ done < "$tool_dir/catalog.tsv"
 echo
 echo 'Скачать и запустить проект'
 echo '========================='
-for ((i=0; i<${#project_ids[@]}; i++)); do printf '%2d) %s [%s]\n' "$((i+1))" "${project_names[$i]}" "${project_ids[$i]}"; done
+COLUMNS="${COLUMNS:-}" "${python_cmd[@]}" "$tool_dir/terminal_table.py" catalog "$tool_dir/catalog.json"
 echo ' 0) Выход'
 [[ $list_only -eq 0 ]] || exit 0
 selected=-1
@@ -434,6 +702,7 @@ from pathlib import Path, PurePosixPath
 import re
 import sys
 import tarfile
+import uuid
 
 GIT_NAMES = {'.git', '.github', '.gitmodules', '.gitconfig', '.git-credentials', '.git-credential-cache'}
 GENERATED = {'node_modules', 'target', 'dist', 'build', 'coverage', '.expo', '.gradle', '.venv', 'venv', '__pycache__', '.DS_Store', '.idea', '.vscode', '.next', '.nuxt', '.cache', '.pytest_cache', '.mypy_cache'}
@@ -453,7 +722,7 @@ def source_path(raw):
         fail('--path не допускает пустые сегменты, . или ...')
     return raw
 
-def destination(raw):
+def destination(raw, replace_existing=False):
     if not raw or any(c in raw for c in '\n\r\t\x00') or '..' in Path(raw).parts:
         fail('Небезопасный путь назначения.')
     value = Path(os.path.abspath(raw))
@@ -466,7 +735,7 @@ def destination(raw):
         fail('Домашняя, текущая и корневая папки не подходят для назначения.')
     if value.is_symlink():
         fail('Папка назначения не должна быть символической ссылкой.')
-    if value.exists() and (not value.is_dir() or any(value.iterdir())):
+    if value.exists() and (not value.is_dir() or (any(value.iterdir()) and not replace_existing)):
         fail('Папка назначения уже существует и не пуста; ничего не изменено.')
     for ancestor in (value.parent, *value.parent.parents):
         metadata = ancestor / '.git'
@@ -578,9 +847,9 @@ def extract(archive_path, target):
         if not any(target.iterdir()):
             fail('После исключения metadata проект пуст.')
 
-def publish(payload, raw_destination, init_git):
+def publish(payload, raw_destination, init_git, replace_existing=False):
     payload = Path(payload)
-    final = destination(raw_destination)  # Recheck immediately before atomic rename.
+    final = destination(raw_destination, replace_existing)  # Recheck immediately before atomic rename.
     for entry in payload.rglob('*'):
         relative = entry.relative_to(payload)
         if entry.name in GIT_NAMES:
@@ -589,9 +858,14 @@ def publish(payload, raw_destination, init_git):
             if init_git and relative.parts[0] == '.git':
                 continue
             fail('В новой копии остались Git metadata.')
+    # Move confirmed non-empty contents aside only after the replacement has
+    # downloaded, been extracted, and passed credential/Git checks.
+    backup = None
+    if replace_existing and final.exists() and any(final.iterdir()):
+        backup = final.parent / ('.' + final.name + '.replaced-' + uuid.uuid4().hex)
+        os.rename(final, backup)
     # POSIX rename replaces an empty directory atomically. Windows requires
-    # rmdir first: the kernel refuses it if any file appeared after validation.
-    # A competing replacement folder then makes rename fail, never overwrite.
+    # rmdir first; on failure restore the previous destination.
     removed_empty = False
     if os.name == 'nt' and final.exists():
         final.rmdir()
@@ -599,9 +873,18 @@ def publish(payload, raw_destination, init_git):
     try:
         os.rename(payload, final)
     except OSError:
+        if backup is not None and not final.exists():
+            os.rename(backup, final)
+            backup = None
         if removed_empty and not final.exists():
             final.mkdir()
         raise
+    if backup is not None:
+        import shutil
+        try:
+            shutil.rmtree(backup)
+        except OSError:
+            print('Предыдущая папка оставлена рядом для ручного удаления: ' + str(backup), file=sys.stderr)
 
 def catalog(filename, wanted=None):
     records = []
@@ -634,11 +917,14 @@ def main():
     elif mode == 'destination':
         # Bash/dirname must receive forward slashes even with native Windows
         # Python under Git Bash, so the temporary dir stays on the same volume.
-        print(destination(args[0]).as_posix())
+        print(destination(args[0], len(args) > 1 and args[1] == '1').as_posix())
+    elif mode == 'nonempty':
+        value = destination(args[0], True)
+        print('1' if value.exists() and any(value.iterdir()) else '0')
     elif mode == 'extract':
         extract(*args)
     elif mode == 'publish':
-        publish(args[0], args[1], args[2] == '1')
+        publish(args[0], args[1], args[2] == '1', len(args) > 3 and args[3] == '1')
     elif mode == 'catalog':
         catalog(*args)
     else:
@@ -670,7 +956,8 @@ usage() {
   --repo URL       GitHub SSH/HTTPS URL или локальный репозиторий для офлайн-проверки.
   --ref REF        Ветка, тег или commit (по умолчанию HEAD).
   --path ПУТЬ      Каталог внутри репозитория (по умолчанию .).
-  --dest ПАПКА     Новая или пустая папка; родитель должен существовать.
+  --dest ПАПКА     Папка проекта; родитель должен существовать.
+  --replace        Явно заменить существующее содержимое папки назначения.
   --catalog TSV    Каталог: id, repo, ref, path (4 колонки TAB; # — комментарий).
   --project ID     Выбрать ровно одну строку из каталога.
   --list           Показать id из каталога, ничего не экспортировать.
@@ -678,7 +965,7 @@ usage() {
 
 Нужны Git и Python 3.9+. Для закрытого repo понадобится доступ через свой аккаунт.
 Открытые GitHub repo скачиваются по HTTPS без входа. Исходный репозиторий не меняется.
-Непустую папку, ссылку и папку внутри существующего Git-репозитория скрипт отклонит.
+Непустую папку можно заменить с флагом --replace; ссылка и папка внутри существующего Git-репозитория отклоняются.
 Исключаются только из новой копии: Git metadata, ссылки, зависимости, сборки,
 .env, известные файлы ключей/credentials, рабочие БД, локальные конфиги и caches.
 .env.example, схемы и лицензии сохраняются. .github и отмеченный набор downloader
@@ -689,7 +976,7 @@ USAGE
 die() { printf 'Ошибка: %s\n' "$*" >&2; exit 1; }
 script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 repo=""; ref="HEAD"; project_path="."; destination=""; catalog=""; project_id=""
-list_only=0; init_git=0; explicit_source=0; work=""
+list_only=0; init_git=0; replace_existing=0; explicit_source=0; work=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --repo|--ref|--path|--dest|--catalog|--project)
@@ -705,6 +992,7 @@ while [[ $# -gt 0 ]]; do
       shift 2 ;;
     --list) list_only=1; shift ;;
     --init-git) init_git=1; shift ;;
+    --replace) replace_existing=1; shift ;;
     --help|-h) usage; exit 0 ;;
     *) die "неизвестный параметр: $1" ;;
   esac
@@ -740,7 +1028,7 @@ fi
 [[ "$ref" != *$'\n'* && "$ref" != *$'\r'* && "$repo" != *$'\n'* ]] || die "URL/ref содержат перевод строки."
 [[ "$repo" != http*://*@* ]] || die "не помещайте пароль/token в URL; используйте SSH или credential helper."
 project_path="$("${python_cmd[@]}" "$script_dir/export_project.py" source-path "$project_path")"
-destination="$("${python_cmd[@]}" "$script_dir/export_project.py" destination "$destination")"
+destination="$("${python_cmd[@]}" "$script_dir/export_project.py" destination "$destination" "$replace_existing")"
 parent="$(dirname -- "$destination")"
 work="$(mktemp -d "$parent/.project-export.XXXXXX")"
 cleanup() {
@@ -771,7 +1059,7 @@ if [[ $init_git -eq 1 ]]; then
   git -c init.templateDir= init --quiet --template= "$work/payload"
   [[ -z "$(git -C "$work/payload" remote)" ]] || die "новый Git неожиданно содержит remote."
 fi
-"${python_cmd[@]}" "$script_dir/export_project.py" publish "$work/payload" "$destination" "$init_git"
+"${python_cmd[@]}" "$script_dir/export_project.py" publish "$work/payload" "$destination" "$init_git" "$replace_existing"
 printf 'Готово: %s\n' "$destination"
 if [[ $init_git -eq 1 ]]; then
   echo 'Создан новый локальный Git без remote и без исходной истории.'
@@ -790,7 +1078,7 @@ cat > "$tool_dir/build-and-run.sh" <<'__EMBED_BUILD_AND_RUN_SH__'
 
 set -eo pipefail
 
-launcher_version="2026-10-14.4"
+launcher_version="2026-10-16.1"
 
 print_usage() {
   cat <<'USAGE'
@@ -1110,17 +1398,269 @@ for ((left = 0; left < ${#project_dirs[@]}; left++)); do
   done
 done
 
-print_projects() {
-  local index
+terminal_table_source() {
+  cat <<'__TERMINAL_TABLE_PY__'
+"""Shared, read-only terminal menu renderer. Python 3.9+, standard library only."""
+import argparse
+from datetime import date, datetime
+import json
+import os
+from pathlib import Path
+import re
+import shutil
+import subprocess
+import sys
+import unicodedata
+import xml.etree.ElementTree as ET
 
+TYPES = {"vite": "Vite", "expo": "Expo", "spring": "Spring Boot"}
+
+
+def clean(value):
+    return "".join(" " if unicodedata.category(c).startswith("C") and c != "\u200d" else c
+                   for c in str(value)).strip()
+
+
+def cell_width(value):
+    width = 0
+    joined = False
+    regional = False
+    for char in value:
+        if char == "\u200d":
+            joined = True
+            continue
+        if unicodedata.combining(char) or char in ("\ufe0e", "\ufe0f") or 0x1F3FB <= ord(char) <= 0x1F3FF:
+            continue
+        is_regional = 0x1F1E6 <= ord(char) <= 0x1F1FF
+        size = 2 if unicodedata.east_asian_width(char) in ("W", "F") or 0x1F000 <= ord(char) <= 0x1FAFF else 1
+        if not joined and not (is_regional and regional):
+            width += size
+        joined = False
+        regional = is_regional and not regional
+    return width
+
+
+def fit(value, width):
+    value = clean(value)
+    if cell_width(value) > width:
+        prefix = ""
+        for char in value:
+            if cell_width(prefix + char) > width - 1:
+                break
+            prefix += char
+        value = prefix.rstrip("\u200d") + "…"
+    return value + " " * max(0, width - cell_width(value))
+
+
+def terminal_width():
+    raw = os.environ.get("COLUMNS", "")
+    return max(32, min(240, int(raw))) if raw.isdigit() else max(32, min(240, shutil.get_terminal_size((120, 24)).columns))
+
+
+def table(rows, width=None):
+    width = width or terminal_width()
+    headers = ["№", "Имя", "Папка", "Тип", "Создана"]
+    # Five visible fields even in a small terminal; prefer space for names and folders.
+    widths = [max(2, len(str(len(rows)))), 4, 5, 3, 10]
+    available = max(0, width - 16 - sum(widths))
+    for column, target in ((3, 11), (1, 22), (2, 36), (1, 42), (2, 120)):
+        extra = min(available, max(0, target - widths[column]))
+        widths[column] += extra
+        available -= extra
+    if width < sum(widths) + 16:
+        widths[4] = max(4, width - 16 - sum(widths[:4]))
+        for column in (2, 1):
+            excess = max(0, sum(widths) + 16 - width)
+            widths[column] -= min(excess, widths[column] - 3)
+    def border(left, middle, right):
+        return left + middle.join("─" * (n + 2) for n in widths) + right
+    def row_line(values):
+        return "│ " + " │ ".join(fit(value, n) for value, n in zip(values, widths)) + " │"
+    lines = [border("┌", "┬", "┐"), row_line(headers), border("├", "┼", "┤")]
+    lines.extend(row_line(row) for row in rows)
+    lines.append(border("└", "┴", "┘"))
+    return "\n".join(lines)
+
+
+def local_path(raw):
+    if os.name == "nt":
+        match = re.fullmatch(r"/(?:cygdrive/)?([A-Za-z])(?:/(.*))?", raw)
+        if match:
+            return Path(match[1] + ":/" + (match[2] or ""))
+    return Path(raw)
+
+
+def creation_date(path):
+    try:
+        info = path.stat()
+        birth = getattr(info, "st_birthtime", None)
+        if birth is None and os.name == "nt":
+            birth = info.st_ctime
+        if birth is not None:
+            return datetime.fromtimestamp(birth).strftime("%Y-%m-%d")
+    except (OSError, ValueError, OverflowError):
+        return "—"
+    # Linux ctime is metadata-change time, not creation time. Ask stat for birth time.
+    for command in (["stat", "-c", "%w", "--", str(path)],
+                    ["stat", "-f", "%SB", "-t", "%Y-%m-%d", str(path)]):
+        try:
+            result = subprocess.run(command, capture_output=True, text=True, timeout=2, check=False)
+            value = result.stdout.strip()[:10]
+            if result.returncode == 0 and re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+                return date.fromisoformat(value).isoformat()
+        except (OSError, ValueError, subprocess.SubprocessError):
+            pass
+    return "—"
+
+
+def friendly_name(path, marker, label):
+    try:
+        if marker == "package.json":
+            app = path / "app.json"
+            if app.is_file():
+                data = json.loads(app.read_text(encoding="utf-8-sig"))
+                name = data.get("expo", {}).get("name")
+                if isinstance(name, str) and name.strip():
+                    return clean(name)
+            data = json.loads((path / marker).read_text(encoding="utf-8-sig"))
+            name = data.get("displayName") or data.get("name")
+        else:
+            root = ET.parse(path / marker).getroot()
+            name = None
+            for key in ("name", "artifactId"):
+                element = next((item for item in root if item.tag.rsplit("}", 1)[-1] == key), None)
+                if element is not None and element.text and element.text.strip():
+                    name = element.text.strip()
+                    break
+        if isinstance(name, str) and name.strip():
+            # Remove course scaffolding identifiers, retain the application name.
+            name = re.sub(r"^(?:front-end-sof\w+?-\d+-|fullstack-homework-|react-native-homework-|homework-\d+-|assignment\d+-)", "", name)
+            name = re.sub(r"-pe\d+$", "", name)
+            name = clean(re.sub(r"[-_]+", " ", name))
+            return name[:1].upper() + name[1:]
+    except (OSError, ValueError, TypeError, AttributeError, ET.ParseError):
+        pass
+    return clean(Path(label).name or label)
+
+
+def local_rows(payload):
+    values = payload.decode("utf-8", errors="replace").split("\0")
+    if values and values[-1] == "":
+        values.pop()
+    if len(values) % 5:
+        raise ValueError("Неполная строка списка проектов.")
+    rows = []
+    for offset in range(0, len(values), 5):
+        number, kind, label, directory, marker = values[offset:offset + 5]
+        path = local_path(directory)
+        rows.append([number, friendly_name(path, marker, label), label, TYPES.get(kind, kind), creation_date(path)])
+    return rows
+
+
+def catalog_rows(data):
+    rows = []
+    for number, item in enumerate(data["projects"], 1):
+        folder = item["repo"].removesuffix(".git").rsplit("/", 1)[-1]
+        kind = item.get("type", "")
+        created = item.get("createdAt", "")[:10]
+        try:
+            created = date.fromisoformat(created).isoformat()
+        except (TypeError, ValueError):
+            created = "—"
+        rows.append([str(number), item["title"], folder, TYPES.get(kind, kind) or "—", created])
+    return rows
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("mode", choices=("local", "catalog"))
+    parser.add_argument("file", nargs="?")
+    args = parser.parse_args()
+    sys.stdout.reconfigure(encoding="utf-8", newline="\n")
+    if args.mode == "local":
+        rows = local_rows(sys.stdin.buffer.read())
+    else:
+        rows = catalog_rows(json.loads(Path(args.file).read_text(encoding="utf-8-sig")))
+    print(table(rows))
+    print(f"Всего проектов: {len(rows)}")
+    if args.mode == "local":
+        print("Создана: локальная папка; — = дата неизвестна.")
+        print("… = сокращено; полный путь будет показан после выбора.")
+    else:
+        print("Создана: репозиторий GitHub; — = дата неизвестна.")
+        print("Папка: предлагаемое имя; место сохранения выбирается далее.")
+
+
+if __name__ == "__main__":
+    main()
+__TERMINAL_TABLE_PY__
+}
+
+table_fallback_cell() {
+  local value="$1" width="$2" count control_code control_char
+  value="${value//[[:cntrl:]]/ }"
+  # Exact UTF-8 byte pairs also work when the shell locale is C, not UTF-8.
+  for ((control_code=128; control_code<=159; control_code++)); do
+    printf -v control_char '\\302\\%03o' "$control_code"
+    printf -v control_char '%b' "$control_char"
+    value="${value//"$control_char"/ }"
+  done
+  if [[ ${#value} -gt $width ]]; then value="${value:0:$((width - 1))}…"; fi
+  printf '%s' "$value"
+  for ((count=${#value}; count<width; count++)); do printf ' '; done
+}
+
+print_projects_fallback() {
+  local index cols="${COLUMNS:-100}" name_width folder_width type_width=11 raw_date created label
+  [[ "$cols" =~ ^[0-9]{1,3}$ ]] || cols=100
+  [[ $cols -ge 40 ]] || cols=40
+  [[ $cols -le 180 ]] || cols=180
+  [[ $cols -ge 48 ]] || type_width=3
+  name_width=$(((cols - 28 - type_width) / 3))
+  folder_width=$((cols - 28 - type_width - name_width))
+  for ((index=-1; index<${#project_dirs[@]}; index++)); do
+    if [[ $index -lt 0 ]]; then
+      set -- '№' 'Имя' 'Папка' 'Тип' 'Создана'
+    else
+      label="${project_labels[$index]}"
+      created='—'
+      raw_date="$(stat -c '%w' -- "${project_dirs[$index]}" 2>/dev/null || stat -f '%SB' -t '%Y-%m-%d' "${project_dirs[$index]}" 2>/dev/null || true)"
+      if [[ "$raw_date" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2} ]]; then created="${raw_date:0:10}"; fi
+      set -- "$((index + 1))" "${label##*/}" "$label" "$(human_type "${project_types[$index]}")" "$created"
+    fi
+    printf '| '; table_fallback_cell "$1" 2
+    printf ' | '; table_fallback_cell "$2" "$name_width"
+    printf ' | '; table_fallback_cell "$3" "$folder_width"
+    printf ' | '; table_fallback_cell "$4" "$type_width"
+    printf ' | '; table_fallback_cell "$5" 10; printf ' |\n'
+  done
+  printf 'Всего проектов: %s\n' "${#project_dirs[@]}"
+  echo 'Создана: локальная папка; — = дата неизвестна.'
+  echo '… = сокращено; полный путь будет показан после выбора.'
+}
+
+print_projects() {
+  local index candidate directory
+  local menu_python=()
   echo "Найденные проекты:"
   echo
-  for ((index = 0; index < ${#project_dirs[@]}; index++)); do
-    printf '%2d) %-24s %s\n' \
-      "$((index + 1))" \
-      "[$(human_type "${project_types[$index]}")]" \
-      "${project_labels[$index]}"
+  # Formatting is optional: a Java/Node project must not require Python to start.
+  for candidate in python3 python; do
+    if command -v "$candidate" >/dev/null 2>&1 && "$candidate" -c 'import sys; sys.exit(sys.version_info < (3,9))' >/dev/null 2>&1; then
+      menu_python=("$candidate"); break
+    fi
   done
+  if [[ ${#menu_python[@]} -eq 0 ]] && command -v py >/dev/null 2>&1 && py -3 -c 'import sys; sys.exit(sys.version_info < (3,9))' >/dev/null 2>&1; then menu_python=(py -3); fi
+  if [[ ${#menu_python[@]} -gt 0 ]]; then
+    if {
+      for ((index=0; index<${#project_dirs[@]}; index++)); do
+        directory="${project_dirs[$index]}"
+        if command -v cygpath >/dev/null 2>&1; then directory="$(cygpath -am -- "$directory")"; fi
+        printf '%s\0%s\0%s\0%s\0%s\0' "$((index + 1))" "${project_types[$index]}" "${project_labels[$index]}" "$directory" "${project_markers[$index]##*/}"
+      done
+    } | COLUMNS="${COLUMNS:-}" "${menu_python[@]}" -c "$(terminal_table_source)" local; then return 0; fi
+  fi
+  print_projects_fallback
 }
 
 if [[ $list_only -eq 1 ]]; then
@@ -2344,22 +2884,31 @@ try:
     value = Path(os.path.abspath(raw))
     if value == Path.home().resolve() or value == Path.cwd().resolve() or value == Path(value.anchor) or value.name.lower() == '.git':
         raise ValueError('Укажите отдельную папку проекта, не корень, домашнюю или текущую папку.')
-    if value.is_symlink() or (value.exists() and (not value.is_dir() or any(value.iterdir()))):
+    if value.is_symlink() or (value.exists() and not value.is_dir()):
         raise ValueError('Папка занята или является ссылкой. Её содержимое сохранено; выберите новую или пустую папку.')
     for ancestor in (value.parent, *value.parent.parents):
         if os.path.lexists(ancestor / '.git'):
             raise ValueError('Папка находится внутри другого Git-репозитория. Выберите независимую папку.')
     value.parent.mkdir(parents=True, exist_ok=True)
-    print(validate(str(value)).as_posix())
+    print(validate(str(value), True).as_posix())
 except (OSError, ValueError, subprocess.SubprocessError) as error:
     print('Ошибка: ' + str(error), file=sys.stderr)
     sys.exit(1)
 __PREPARE_FOLDER__
 )"
+if [[ $replace_existing -eq 0 && "$("${python_cmd[@]}" "$tool_dir/export_project.py" nonempty "$destination")" == 1 ]]; then
+  [[ -t 0 ]] || die 'Папка уже содержит файлы. Для явной замены передайте --replace.'
+  echo
+  printf 'Папка %s и её содержимое будут заменены, включая локальный Git и несохранённые изменения. Продолжить? [y/N] ' "$destination"
+  read -r replace_answer || die 'Ввод завершён; папка не изменена.'
+  case "$replace_answer" in y|Y|yes|YES|да|Да|Д) replace_existing=1 ;; *) die 'Отменено; папка не изменена.' ;; esac
+fi
 echo
 printf 'Проект: %s\nПапка: %s\n' "${project_names[$selected]}" "$destination"
 echo '[1/3] Скачиваю исходники и очищаю исходную историю и связи GitHub...'
-"$BASH" "$tool_dir/export-project.sh" --repo "${project_repos[$selected]}" --ref "${project_refs[$selected]}" --path "${project_paths[$selected]}" --dest "$destination" --init-git
+replace_args=()
+if [[ $replace_existing -eq 1 ]]; then replace_args+=(--replace); fi
+"$BASH" "$tool_dir/export-project.sh" --repo "${project_repos[$selected]}" --ref "${project_refs[$selected]}" --path "${project_paths[$selected]}" --dest "$destination" --init-git "${replace_args[@]}"
 # Preserve the launcher in the client copy for a later start without downloading again.
 cp -- "$tool_dir/build-and-run.sh" "$destination/build-and-run.sh"
 # Platform choice belongs to the embedded launcher, so both entrypoints
