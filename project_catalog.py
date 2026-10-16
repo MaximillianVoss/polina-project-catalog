@@ -153,6 +153,7 @@ def main():
     parser.add_argument("--url", default=DEFAULT_URL)
     parser.add_argument("--embedded", required=True)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--menu-json", help="Validated catalog with optional display metadata")
     parser.add_argument("--offline", action="store_true")
     args = parser.parse_args()
     sys.stdout.reconfigure(encoding="utf-8", newline="\n")
@@ -162,6 +163,9 @@ def main():
         lines = ["\t".join(row[key] for key in ("id", "title", "repo", "ref", "path")) for row in data["projects"]]
         with Path(args.output).open("w", encoding="utf-8", newline="\n") as output:
             output.write("\n".join(lines) + "\n")
+        if args.menu_json:
+            with Path(args.menu_json).open("w", encoding="utf-8", newline="\n") as output:
+                json.dump(data, output, ensure_ascii=False)
     except (OSError, ValueError, UnicodeError) as error:
         print("Ошибка каталога: " + str(error), file=sys.stderr)
         return 1
